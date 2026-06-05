@@ -56,7 +56,8 @@ fun ReaderScreen(
     var isOverlayVisible by remember { mutableStateOf(false) }
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
     ) {
         HorizontalPager(
             modifier = Modifier
@@ -97,7 +98,7 @@ fun ReaderScreen(
 
         AnimatedVisibility(
             isOverlayVisible,
-            enter = slideInVertically { it }, // The it is the full height of the composable, so it slides in from exactly its own height below the screen.
+            enter = slideInVertically { it }, // The 'it' is the full height of the composable, so it slides in from exactly its own height below the screen.
             exit = slideOutVertically { it },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
