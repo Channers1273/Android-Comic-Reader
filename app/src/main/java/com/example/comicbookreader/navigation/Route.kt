@@ -10,5 +10,5 @@ sealed interface Route: NavKey {
     data object Home: Route, NavKey {}
 
     @Serializable
-    data object Reader: Route, NavKey
+    data class Reader(val comicUri: String): Route, NavKey
 }

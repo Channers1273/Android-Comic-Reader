@@ -1,14 +1,17 @@
 package com.example.comicbookreader.navigation
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.example.comicbookreader.screens.HomeScreen
@@ -33,13 +36,24 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
     NavDisplay(
         modifier = modifier,
         backStack = backStack,
+        entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator()
+        ),
         entryProvider = { key ->
             when(key) {
                 is Route.Home -> {
                     NavEntry(key) {
+
+                        val launcher = rememberLauncherForActivityResult(
+                            contract = ActivityResultContracts.OpenDocument(),
+                            onResult = { contentUri ->
+                                backStack.add(Route.Reader(contentUri.toString()))
+                            }
+                        )
                         HomeScreen(
                             onSelectComicClick = {
-                                backStack.add(Route.Reader)
+                                launcher.launch(arrayOf("application/x-cbz"))
                             },
                             modifier = Modifier
                                 .fillMaxSize()
@@ -50,7 +64,9 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
 
                 is Route.Reader -> {
                     NavEntry(key) {
-                        ReaderScreen()
+                        ReaderScreen(
+                            comicUri = key.comicUri
+                        )
                     }
                 }
 
