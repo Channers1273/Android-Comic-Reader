@@ -3,8 +3,10 @@ package com.example.comicbookreader.data.repository
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.io.File
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -28,7 +30,10 @@ class ComicRepository(
 
                     if (!page.isDirectory) {
                         val pageName = page.name
-                        Log.d("unzipComicRepository", "unzipped and got file $pageName || Type is ${page::class.qualifiedName}")
+                        Log.d(
+                            "unzipComicRepository",
+                            "unzipped and got file $pageName || Type is ${page::class.qualifiedName}"
+                        )
 
                         val outputFile = File(context.cacheDir, pageName)
                         outputFile.writeBytes(zip.readBytes())
@@ -39,10 +44,9 @@ class ComicRepository(
                         zip.closeEntry()
                         page = zip.nextEntry
                     }
-
                 }
             }
-        }
+        }.flowOn(Dispatchers.Default)
 
         return flow
     }
