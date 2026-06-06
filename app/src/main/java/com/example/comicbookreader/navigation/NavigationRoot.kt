@@ -55,9 +55,7 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
                             onSelectComicClick = {
                                 launcher.launch(arrayOf("application/x-cbz"))
                             },
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp)
+
                         )
                     }
                 }

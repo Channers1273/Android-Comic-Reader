@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,61 +58,67 @@ fun ReaderScreen(
 
     var isOverlayVisible by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
-        HorizontalPager(
+    Scaffold(
+        modifier = Modifier,
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .pointerInput(Unit) {
-                    detectTapGestures {
-                        isOverlayVisible = !isOverlayVisible
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            HorizontalPager(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .pointerInput(Unit) {
+                        detectTapGestures {
+                            isOverlayVisible = !isOverlayVisible
+                        }
+
                     }
+                    .align(Alignment.Center),
+                state = pagerState
+            ) { page ->
 
-                }
-                .align(Alignment.Center),
-            state = pagerState
-        ) { page ->
+                AsyncImage(
+                    model = pages[page],
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
 
-            AsyncImage (
-                model = pages[page],
-                contentDescription = null,
+            AnimatedVisibility(
+                isOverlayVisible,
+                enter = slideInVertically { -it },
+                exit = slideOutVertically { -it },
                 modifier = Modifier
-                    .fillMaxWidth()
-            )
-        }
+                    .align(Alignment.TopCenter)
 
-        AnimatedVisibility(
-            isOverlayVisible,
-            enter = slideInVertically { -it },
-            exit = slideOutVertically { -it },
-            modifier = Modifier
-                .align(Alignment.TopCenter)
+            ) {
+                TopBar(
+                    modifier = Modifier
+                        .height(90.dp)
+                        .fillMaxWidth()
+                        .background(Color.Red)
+                )
+            }
 
-        ) {
-            TopBar(
+            AnimatedVisibility(
+                isOverlayVisible,
+                enter = slideInVertically { it }, // The 'it' is the full height of the composable, so it slides in from exactly its own height below the screen.
+                exit = slideOutVertically { it },
                 modifier = Modifier
-                    .height(90.dp)
-                    .fillMaxWidth()
-                    .background(Color.Red)
-            )
-        }
-
-        AnimatedVisibility(
-            isOverlayVisible,
-            enter = slideInVertically { it }, // The 'it' is the full height of the composable, so it slides in from exactly its own height below the screen.
-            exit = slideOutVertically { it },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-        ) {
-            BottomBar(
-                pageNumber = pagerState.currentPage,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(90.dp)
-                    .background(Color.Green)
-            )
+                    .align(Alignment.BottomCenter)
+            ) {
+                BottomBar(
+                    pageNumber = pagerState.currentPage,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(90.dp)
+                        .background(Color.Green)
+                )
+            }
         }
     }
 }
