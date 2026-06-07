@@ -13,15 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.comicbookreader.viewmodels.HomeViewModel
 
 @Composable
-fun HomeScreen(
-    onSelectComicClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel()
+fun LibraryScreen(
+    onSelectComicDirectoryClick: () -> Unit,
+    onGoToCollectionClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier = modifier,
@@ -35,13 +32,26 @@ fun HomeScreen(
             contentAlignment = Alignment.Center
         ) {
             Button(
-                onClick = onSelectComicClick,
+                onClick = onSelectComicDirectoryClick,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                     contentColor = Color.White
-                )
+                ),
+                modifier = Modifier.align(Alignment.TopCenter)
             ) {
-                Text("Select Comic")
+                Text("Select Comic Directory")
+            }
+
+
+            Button(
+                onClick = onGoToCollectionClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    contentColor = Color.White
+                ),
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                Text("Go to Collection")
             }
         }
 

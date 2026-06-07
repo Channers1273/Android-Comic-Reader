@@ -30,8 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.example.comicbookreader.viewmodels.ReaderViewModel
 
@@ -39,7 +39,7 @@ import com.example.comicbookreader.viewmodels.ReaderViewModel
 fun ReaderScreen(
     comicUri: String,
     modifier: Modifier = Modifier,
-    viewModel: ReaderViewModel = viewModel<ReaderViewModel>()
+    viewModel: ReaderViewModel = hiltViewModel()
 ) {
 
     Log.d("Tag", "Entered Reader Screen")
