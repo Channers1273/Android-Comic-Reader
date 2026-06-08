@@ -27,7 +27,7 @@ object AppModule {
             context,
             ComicDatabase::class.java,
             "comics.db"
-        ).build()
+        ).fallbackToDestructiveMigration(dropAllTables = true).build()
     }
 
     @Provides

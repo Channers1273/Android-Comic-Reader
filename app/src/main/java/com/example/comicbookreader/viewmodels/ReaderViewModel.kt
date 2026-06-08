@@ -16,7 +16,6 @@ class ReaderViewModel @Inject constructor(
     private val comicRepository: ComicRepository,
 ): ViewModel() {
 
-    // YOU'RE TRYING TO NAVIGATE collection screen to see stuff in the db
     private val _comicPages = MutableStateFlow<List<Uri>>(emptyList())
     val pages = _comicPages.asStateFlow()
 

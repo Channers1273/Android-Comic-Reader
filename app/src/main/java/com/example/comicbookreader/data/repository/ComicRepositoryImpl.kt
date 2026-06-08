@@ -1,10 +1,11 @@
 package com.example.comicbookreader.data.repository
 
+import android.R.attr.thumbnail
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
+import androidx.navigation3.runtime.metadata
 import com.example.comicbookreader.data.local.ComicDao
 import com.example.comicbookreader.data.model.Comic
 import com.example.comicbookreader.domain.repository.ComicRepository
@@ -13,8 +14,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import java.io.File
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -72,27 +75,39 @@ class ComicRepositoryImpl(
 
         val fileName = documentFile.name ?: return null
         val title = fileName.removeSuffix(".cbz")
-        val pageCount = getNumPages(fileUri)
+        val metaData = getFileMetadata(fileUri, fileName)
 
         return Comic (
             title = title,
-            pageCount = pageCount,
+            pageCount = metaData.pageCount,
             lastOpened = null,
-            dateAdded = LocalDate.now().toString(),
-            fileUriString = fileUri.toString(),
+            dateAdded = LocalDateTime.now(),
+            fileUri = fileUri,
+            thumbnailPath = metaData.thumbnailPath
         )
     }
 
-    private fun getNumPages(fileUri: Uri): Int {
+    private fun getFileMetadata(fileUri: Uri, fileName: String): ComicMetadata {
         val inputStream = context.contentResolver.openInputStream(fileUri)
 
         var pageCount = 0
+
+        var thumbnailPath = ""
+
         ZipInputStream(inputStream).use { zip ->
             var page = zip.nextEntry
+            var hasExtractedThumbnail = false
 
             while (page != null) {
                 if (!page.isDirectory) {
                     pageCount++
+
+                    if (!hasExtractedThumbnail) {
+                        val outputFile = File(context.filesDir, "thumbnail- + ${fileName.substringBeforeLast(".")} + .png")
+                        outputFile.writeBytes(zip.readBytes())
+                        thumbnailPath = outputFile.absolutePath
+                        hasExtractedThumbnail = true
+                    }
 
                     zip.closeEntry()
                     page = zip.nextEntry
@@ -100,12 +115,15 @@ class ComicRepositoryImpl(
             }
 
         }
-        return pageCount
+        return ComicMetadata(pageCount, thumbnailPath)
     }
 
     override suspend fun syncLibrary(folderUri: Uri) {
-        val foundUris = scanFolder( folderUri)
-        val existingUris = comicDao.getAllComics().map { it.fileUriString.toUri() }
+        val foundUris: List<Uri> = scanFolder(folderUri)
+
+        val existingUris = comicDao.getAllComicsOnce().map {
+            it.fileUri
+        }
 
         val newUris = foundUris.filter { it !in existingUris }
         newUris.forEach { uri ->
@@ -114,4 +132,14 @@ class ComicRepositoryImpl(
         }
     }
 
+    override fun getAllComics(): Flow<List<Comic>> {
+        return comicDao.getAllComics()
+    }
+
 }
+
+data class ComicMetadata(
+    val pageCount: Int,
+    val thumbnailPath: String
+)
+
