@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -80,14 +81,18 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
 
                 is Route.Collection -> {
                     NavEntry(key) {
-                        CollectionScreen()
+                        CollectionScreen(
+                            onThumbnailClick = { comic ->
+                                backStack.add(Route.Reader(comic.toString()))
+                            }
+                        )
                     }
                 }
 
                 is Route.Reader -> {
                     NavEntry(key) {
                         ReaderScreen(
-                            comicUri = key.comicUri
+                            comicUri = key.comicUri.toUri()
                         )
                     }
                 }

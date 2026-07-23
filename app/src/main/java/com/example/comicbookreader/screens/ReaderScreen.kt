@@ -1,5 +1,6 @@
 package com.example.comicbookreader.screens
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
@@ -29,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -37,7 +37,7 @@ import com.example.comicbookreader.viewmodels.ReaderViewModel
 
 @Composable
 fun ReaderScreen(
-    comicUri: String,
+    comicUri: Uri,
     modifier: Modifier = Modifier,
     viewModel: ReaderViewModel = hiltViewModel()
 ) {
@@ -47,7 +47,7 @@ fun ReaderScreen(
     // makes it so that this is only ran once on initial composition, then only ran in
     // recompositions if this value changed
     LaunchedEffect(comicUri) {
-        viewModel.loadComic(comicUri.toUri())
+        viewModel.loadComic(comicUri)
     }
 
     val pages by viewModel.pages.collectAsStateWithLifecycle()
@@ -59,7 +59,7 @@ fun ReaderScreen(
     var isOverlayVisible by remember { mutableStateOf(false) }
 
     Scaffold(
-        modifier = Modifier,
+        modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Box(
@@ -86,6 +86,7 @@ fun ReaderScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 )
+
             }
 
             AnimatedVisibility(

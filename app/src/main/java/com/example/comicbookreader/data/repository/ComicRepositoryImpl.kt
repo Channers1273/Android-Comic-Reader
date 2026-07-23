@@ -51,10 +51,9 @@ class ComicRepositoryImpl(
 
                         val uri = Uri.fromFile(outputFile)
                         emit(uri)
-
-                        zip.closeEntry()
-                        page = zip.nextEntry
                     }
+                    zip.closeEntry()
+                    page = zip.nextEntry
                 }
             }
         }.flowOn(Dispatchers.Default)
