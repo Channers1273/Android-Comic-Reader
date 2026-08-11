@@ -1,17 +1,7 @@
 package com.example.comicbookreader.navigation
 
-import android.content.Intent
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -19,10 +9,12 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import com.example.comicbookreader.screens.CollectionScreen
-import com.example.comicbookreader.screens.LibraryScreen
-import com.example.comicbookreader.screens.ReaderScreen
-import com.example.comicbookreader.viewmodels.UserSettingsViewModel
+import com.example.comicbookreader.feature.collection.presentation.detail.CollectionDetailRoot
+import com.example.comicbookreader.feature.collection.presentation.list.CollectionListRoot
+import com.example.comicbookreader.feature.library.presentation.LibraryRoot
+import com.example.comicbookreader.feature.reader.presentation.ReaderRoot
+import com.example.comicbookreader.feature.readinglists.presentation.detail.ReadingListDetailRoot
+import com.example.comicbookreader.feature.readinglists.presentation.lists.ReadingListsRoot
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 
@@ -33,6 +25,10 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
             serializersModule = SerializersModule {
                 polymorphic(NavKey::class) {
                     subclass(Route.Library::class, Route.Library.serializer())
+                    subclass(Route.Collections::class, Route.Collections.serializer())
+                    subclass(Route.CollectionDetail::class, Route.CollectionDetail.serializer())
+                    subclass(Route.ReadingLists::class, Route.ReadingLists.serializer())
+                    subclass(Route.ReadingListDetail::class, Route.ReadingListDetail.serializer())
                     subclass(Route.Reader::class, Route.Reader.serializer())
                 }
             }
@@ -48,42 +44,49 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
             rememberViewModelStoreNavEntryDecorator()
         ),
         entryProvider = { key ->
-            when(key) {
+            when (key) {
                 is Route.Library -> {
                     NavEntry(key) {
-
-                        val userSettingsViewModel = hiltViewModel<UserSettingsViewModel>()
-
-                        val context = LocalContext.current
-
-                        val launcher = rememberLauncherForActivityResult(
-                            contract = ActivityResultContracts.OpenDocumentTree(),
-                            onResult = { folderUri ->
-                                folderUri?.let {
-                                    context.contentResolver.takePersistableUriPermission(
-                                        it,
-                                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                    )
-                                    userSettingsViewModel.onComicDirectoryChanged(it.toString())
-                                }
-                            }
+                        LibraryRoot(
+                            onNavigateToCollections = { backStack.add(Route.Collections) },
+                            onNavigateToReadingLists = { backStack.add(Route.ReadingLists) }
                         )
-                        LibraryScreen(
-                            onSelectComicDirectoryClick = {
-                                launcher.launch(null)
-                            },
-                            onGoToCollectionClick = {
-                                backStack.add(Route.Collection)
+                    }
+                }
+
+                is Route.Collections -> {
+                    NavEntry(key) {
+                        CollectionListRoot(
+                            onCollectionClick = { folderPath ->
+                                backStack.add(Route.CollectionDetail(folderPath))
                             }
                         )
                     }
                 }
 
-                is Route.Collection -> {
+                is Route.CollectionDetail -> {
                     NavEntry(key) {
-                        CollectionScreen(
-                            onThumbnailClick = { comic ->
-                                backStack.add(Route.Reader(comic.toString()))
+                        CollectionDetailRoot(
+                            folderPath = key.folderPath,
+                            onComicClick = { comicId -> backStack.add(Route.Reader(comicId)) }
+                        )
+                    }
+                }
+
+                is Route.ReadingLists -> {
+                    NavEntry(key) {
+                        ReadingListsRoot(
+                            onListClick = { listId -> backStack.add(Route.ReadingListDetail(listId)) }
+                        )
+                    }
+                }
+
+                is Route.ReadingListDetail -> {
+                    NavEntry(key) {
+                        ReadingListDetailRoot(
+                            listId = key.listId,
+                            onComicClick = { comicId, listId ->
+                                backStack.add(Route.Reader(comicId, listId))
                             }
                         )
                     }
@@ -91,13 +94,18 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
 
                 is Route.Reader -> {
                     NavEntry(key) {
-                        ReaderScreen(
-                            comicUri = key.comicUri.toUri()
+                        ReaderRoot(
+                            comicId = key.comicId,
+                            readingListId = key.readingListId,
+                            onNavigateToNextComic = { comicId, listId ->
+                                backStack.removeLastOrNull()
+                                backStack.add(Route.Reader(comicId, listId))
+                            }
                         )
                     }
                 }
 
-                else -> error("Unknown Navkey: $key")
+                else -> error("Unknown NavKey: $key")
             }
         }
     )

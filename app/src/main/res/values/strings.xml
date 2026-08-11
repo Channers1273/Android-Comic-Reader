@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">ComicBookReader</string>
+
+    <string name="cd_comic_cover">Cover of %1$s</string>
+    <string name="collection_comic_count">%1$d comics</string>
+
+    <string name="error_comic_not_found">Comic not found</string>
+    <string name="error_disk_full">Not enough storage space</string>
+    <string name="error_permission_denied">Permission to access this file was denied</string>
+    <string name="error_corrupted_archive">This comic file appears to be corrupted</string>
+    <string name="error_unknown">Something went wrong</string>
 </resources>
