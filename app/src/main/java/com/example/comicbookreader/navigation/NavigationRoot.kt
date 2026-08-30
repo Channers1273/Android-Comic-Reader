@@ -12,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -90,8 +91,14 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
             }
         }
     ) { innerPadding ->
+        val currentRoute = backStack.lastOrNull()
+        val bottomPadding = if (currentRoute != null && currentRoute in TOP_LEVEL_ROUTES) {
+            innerPadding.calculateBottomPadding()
+        } else {
+            0.dp
+        }
         NavDisplay(
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier.padding(bottom = bottomPadding),
             backStack = backStack,
             entryDecorators = listOf(
                 rememberSaveableStateHolderNavEntryDecorator(),

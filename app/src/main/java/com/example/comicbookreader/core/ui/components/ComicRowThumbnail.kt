@@ -12,6 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.comicbookreader.R
+import java.io.File
 
 @Composable
 fun ComicRowThumbnail(
@@ -20,7 +21,7 @@ fun ComicRowThumbnail(
     modifier: Modifier = Modifier
 ) {
     AsyncImage(
-        model = thumbnailPath,
+        model = thumbnailPath?.let(::File),
         contentDescription = stringResource(R.string.cd_comic_cover, title),
         contentScale = ContentScale.Fit,
         modifier = modifier

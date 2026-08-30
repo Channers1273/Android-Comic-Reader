@@ -74,6 +74,8 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.telephoto.zoomable.image.coil3)
+    implementation(libs.junrar)
 
     implementation(libs.reorderable)
 

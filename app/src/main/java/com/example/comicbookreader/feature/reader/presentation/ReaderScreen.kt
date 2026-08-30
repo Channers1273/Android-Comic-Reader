@@ -32,6 +32,8 @@ import coil3.compose.AsyncImage
 import com.example.comicbookreader.core.presentation.ObserveAsEvents
 import com.example.comicbookreader.feature.reader.presentation.components.ReaderBottomBar
 import com.example.comicbookreader.feature.reader.presentation.components.ReaderTopBar
+import java.io.File
+import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
 
 @Composable
 fun ReaderRoot(
@@ -113,26 +115,23 @@ fun ReaderScreen(
                 else -> {
                     HorizontalPager(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center)
-                            .pointerInput(Unit) {
-                                detectTapGestures {
-                                    onAction(ReaderAction.OnToggleOverlay)
-                                }
-                            },
+                            .fillMaxSize()
+                            .align(Alignment.Center),
                         state = pagerState
                     ) { page ->
                         if (page < state.pages.size) {
-                            AsyncImage(
-                                model = state.pages[page],
+                            ZoomableAsyncImage(
+                                model = File(state.pages[page]),
                                 contentDescription = null,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxSize(),
+                                onClick = { onAction(ReaderAction.OnToggleOverlay) }
                             )
                         } else if (listContext is ReadingListContext.InList && listContext.nextComic != null) {
                             NextComicTransitionPage(
                                 title = listContext.nextComic.title,
                                 thumbnailPath = listContext.nextComic.thumbnailPath,
-                                onContinueClick = { onAction(ReaderAction.OnContinueToNextComic) }
+                                onContinueClick = { onAction(ReaderAction.OnContinueToNextComic) },
+                                onToggleOverlay = { onAction(ReaderAction.OnToggleOverlay) }
                             )
                         }
                     }
@@ -169,17 +168,23 @@ private fun NextComicTransitionPage(
     title: String,
     thumbnailPath: String?,
     onContinueClick: () -> Unit,
+    onToggleOverlay: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .fillMaxHeight(),
+            .fillMaxHeight()
+            .pointerInput(Unit) {
+                detectTapGestures {
+                    onToggleOverlay()
+                }
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         AsyncImage(
-            model = thumbnailPath,
+            model = thumbnailPath?.let(::File),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()

@@ -30,6 +30,8 @@ turbine = "1.2.0"
 assertk = "0.28.1"
 kotlinxCoroutinesTest = "1.10.2"
 reorderable = "3.0.0"
+telephoto = "0.19.0"
+junrar = "8.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -72,6 +74,8 @@ turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine
 assertk = { group = "com.willowtreeapps.assertk", name = "assertk", version.ref = "assertk" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 reorderable = { group = "sh.calvin.reorderable", name = "reorderable", version.ref = "reorderable" }
+telephoto-zoomable-image-coil3 = { group = "me.saket.telephoto", name = "zoomable-image-coil3", version.ref = "telephoto" }
+junrar = { group = "com.github.junrar", name = "junrar", version.ref = "junrar" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
