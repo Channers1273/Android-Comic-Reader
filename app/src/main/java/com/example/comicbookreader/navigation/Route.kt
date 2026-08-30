@@ -10,9 +10,6 @@ sealed interface Route : NavKey {
     data object Library : Route
 
     @Serializable
-    data object Collections : Route
-
-    @Serializable
     data class CollectionDetail(val folderPath: String) : Route
 
     @Serializable
@@ -22,5 +19,14 @@ sealed interface Route : NavKey {
     data class ReadingListDetail(val listId: Long) : Route
 
     @Serializable
+    data class ReadingListEditContents(val listId: Long) : Route
+
+    @Serializable
+    data class ComicPicker(val listId: Long) : Route
+
+    @Serializable
     data class Reader(val comicId: Int, val readingListId: Long? = null) : Route
+
+    @Serializable
+    data object Settings : Route
 }

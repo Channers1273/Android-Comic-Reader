@@ -9,4 +9,27 @@
     <string name="error_permission_denied">Permission to access this file was denied</string>
     <string name="error_corrupted_archive">This comic file appears to be corrupted</string>
     <string name="error_unknown">Something went wrong</string>
+
+    <string name="reading_lists_title">Reading Lists</string>
+    <string name="reading_lists_empty_state">You have not made any lists. Tap the + icon to create one.</string>
+    <string name="reading_lists_cd_create">Create reading list</string>
+    <string name="reading_lists_cd_menu">List options</string>
+    <string name="reading_lists_rename">Rename</string>
+    <string name="reading_lists_edit_contents">Edit contents</string>
+    <string name="reading_lists_delete">Delete</string>
+    <string name="reading_lists_delete_confirm_title">Delete reading list %1$s?</string>
+    <string name="reading_lists_create_dialog_title">New reading list</string>
+    <string name="reading_lists_create_confirm">Create</string>
+    <string name="reading_lists_rename_dialog_title">Rename list</string>
+    <string name="reading_lists_rename_confirm">Rename</string>
+    <string name="dialog_cancel">Cancel</string>
+
+    <string name="reading_list_edit_contents_title">Edit list</string>
+    <string name="reading_list_edit_contents_add_comics">Add comics</string>
+    <string name="reading_list_edit_contents_cd_drag_handle">Reorder item</string>
+    <string name="reading_list_edit_contents_cd_remove">Remove from list</string>
+
+    <string name="comic_picker_title">Add comics</string>
+    <string name="comic_picker_search_hint">Search comics</string>
+    <string name="comic_picker_done">Done</string>
 </resources>
